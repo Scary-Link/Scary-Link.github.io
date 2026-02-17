@@ -17,7 +17,7 @@
     }
 
     .container {
-        max-width: 600px;
+        max-width: 650px;
         padding: 20px;
     }
 
@@ -57,7 +57,7 @@
 <div class="container" id="app"></div>
 
 <script>
-/* ---------- Weighted Chaos Arrays ---------- */
+/* ---------------- Weighted Chaos Arrays ---------------- */
 
 const mb = ['', '', '', 'phish_', 'account_', 'hidden_', 'install_', 'exploit_', 'root_', 'dox_', 'arpa_', 'logger_', 'impersonate_', 'lottery_', 'ad_', 'campaign_', 'flash_', 'urgent_', 'TODO_obfuscate_url_'];
 
@@ -67,9 +67,9 @@ const gb = ['', '.exe','.msi','.js','.php','.dll','.bat','.scr','.lnk','.docm','
 
 const yb = ['system32','Windows','Program_Files','temp','cache','download','update','install','hidden','secret','fbi','cia','nsa','irs','bank','paypal','bitcoin','free_robux','gift_card','lottery','winner','prize','virus','trojan','malware','ransomware','keylogger','surveillance','evidence','leaked','hacked','stolen'];
 
-const kb = ['?tracking_id=666&camera_access=true','?steal_password=true&hide_window=1','?lat=38.8977&long=-77.0365&target=acquired','?auto_download=true&execute=immediate','?mining_monero=true&cpu_usage=100','?encrypt_files=all&ransom_amount=5BTC','?delete_system32=true&confirm=yes','?keylogger=active&send_logs=hourly','?vpn_bypass=true&ip_logged=true','?facial_recognition=match_found&identity=stolen'];
+const kb = ['?tracking_id=666&camera_access=true','?vpn_bypass=true&ip_logged=true','?encrypt_files=all&ransom_amount=5BTC','?delete_system32=true&confirm=yes','?keylogger=active&send_logs=hourly'];
 
-/* ---------- Helpers ---------- */
+/* ---------------- Helpers ---------------- */
 
 const r = arr => arr[Math.floor(Math.random() * arr.length)];
 
@@ -86,13 +86,65 @@ function generateQuery() {
     return Math.random() > 0.2 ? r(kb) : '';
 }
 
-/* ---------- App Logic ---------- */
+/* ---------------- URL Normalization ---------------- */
+
+function normalize(url) {
+    url = url.trim();
+
+    // Remove protocol
+    url = url.replace(/^https?:\/\//, '');
+
+    // Remove www
+    url = url.replace(/^www\./, '');
+
+    // YouTube watch → youtu.be (preserve t and list)
+    const ytMatch = url.match(/^youtube\.com\/watch\?(.+)/);
+
+    if (ytMatch) {
+        const params = new URLSearchParams(ytMatch[1]);
+        const videoId = params.get('v');
+
+        if (videoId) {
+            let shortUrl = `youtu.be/${videoId}`;
+
+            if (params.get('t')) {
+                shortUrl += `?t=${params.get('t')}`;
+            }
+
+            if (params.get('list')) {
+                const sep = shortUrl.includes('?') ? '&' : '?';
+                shortUrl += `${sep}list=${params.get('list')}`;
+            }
+
+            return shortUrl;
+        }
+    }
+
+    return url;
+}
+
+/* ---------------- Encoding ---------------- */
+
+function encodeUrlSafe(str) {
+    return btoa(str)
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, '');
+}
+
+function decodeUrlSafe(str) {
+    str = str.replace(/-/g, '+').replace(/_/g, '/');
+    while (str.length % 4) str += '=';
+    return atob(str);
+}
+
+/* ---------------- App Logic ---------------- */
 
 const app = document.getElementById("app");
 const params = new URLSearchParams(window.location.search);
 const accessKey = params.get("access_key");
 
-/* ---------- Redirect Mode ---------- */
+/* ---------------- Redirect Mode ---------------- */
 
 if (accessKey) {
 
@@ -104,7 +156,19 @@ if (accessKey) {
     `;
 
     try {
-        const decoded = atob(accessKey);
+        let decoded;
+
+        // Try URL-safe first
+        try {
+            decoded = decodeUrlSafe(accessKey);
+        } catch {
+            // Fallback to legacy Base64
+            decoded = atob(accessKey);
+        }
+
+        if (!decoded.startsWith("http")) {
+            decoded = "https://" + decoded;
+        }
 
         setTimeout(() => {
             window.location.href = decoded;
@@ -116,15 +180,15 @@ if (accessKey) {
 
 }
 
-/* ---------- Generator Mode ---------- */
+/* ---------------- Generator Mode ---------------- */
 
 else {
 
     app.innerHTML = `
-        <h2>ScaryLink</h2>
+        <h2>CreepyLink Classic (Optimized)</h2>
         <p>Make your URL look extremely suspicious.</p>
         <input id="urlInput" placeholder="Paste boring URL here..." />
-        <button onclick="generateLink()">Generate Scary Link</button>
+        <button onclick="generateLink()">Generate Creepy Link</button>
         <div class="output" id="output"></div>
     `;
 
@@ -132,7 +196,9 @@ else {
         const input = document.getElementById("urlInput").value.trim();
         if (!input) return;
 
-        const encoded = btoa(input);
+        const normalized = normalize(input);
+        const encoded = encodeUrlSafe(normalized);
+
         const path = generatePath();
         const query = generateQuery();
 
