@@ -389,15 +389,9 @@ if (accessKey) {
 /* ---------------- Generator Mode ---------------- */
 
 else {
-    window.copyLink = function() {
+    function copyLink() {
     const linkText = document.getElementById('scaryLinkText').innerText;
-    navigator.clipboard.writeText(linkText)
-        .then(() => {
-            alert('Link copied to clipboard!');
-        })
-        .catch(() => {
-            alert('Failed to copy. Try selecting and copying manually.');
-        });
+    navigator.clipboard.writeText(linkText);
     };
     
     
