@@ -279,14 +279,11 @@ const trustedDomains = ['youtube.com', 'vimeo.com', 'amazon.com'];
 
 // Function to get the root domain and TLD (ignores subdomains)
 function getRootDomainAndTLD(hostname) {
-    // Split the hostname into parts (e.g., ['www', 'youtube', 'com'])
     const parts = hostname.split('.').reverse();
-    
-    // If the domain is valid and consists of at least 2 parts (e.g., youtube.com, amazon.com)
     if (parts.length >= 2) {
-        return parts[1] + '.' + parts[0];  // Combine to return domain + TLD (e.g., youtube.com)
+        return parts[1] + '.' + parts[0];  // Extract domain + TLD (e.g., youtube.com)
     }
-    return hostname;  // Return as is for non-standard domains
+    return hostname;  // For non-standard domain structures
 }
 
 // Function to check if the URL belongs to a trusted domain and isn't suspicious
