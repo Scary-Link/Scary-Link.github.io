@@ -274,6 +274,47 @@ function decodeUrlSafe(str) {
     return atob(str);
 }
 
+// Trusted domains list — keep this small!
+const trustedDomains = ['youtube.com', 'vimeo.com', 'amazon.com'];
+
+// Function to check if the URL belongs to a trusted domain and isn't suspicious
+function isTrustedDomain(url) {
+    try {
+        // Parse the URL using the URL object
+        const parsedUrl = new URL(url);
+        const hostname = parsedUrl.hostname;
+
+        // Check if the hostname is in the list of trusted domains
+        if (trustedDomains.some(domain => hostname === domain)) {
+
+            // Now check if the query parameters contain any suspicious redirects
+            const searchParams = parsedUrl.searchParams;
+            const suspiciousParams = ['q', 'redirect', 'url', 'destination', 'source', 'forward'];
+
+            for (const param of suspiciousParams) {
+                if (searchParams.has(param)) {
+                    // If suspicious query parameter is found, block the URL
+                    return false;
+                }
+            }
+
+            // Ensure the protocol is "http" or "https" and prevent file schemes or other unsafe URLs
+            if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
+                return false;
+            }
+
+            // If it's a clean URL from a trusted domain, it's safe
+            return true;
+        }
+
+        // If the domain is not trusted, block it
+        return false;
+    } catch (error) {
+        // If URL parsing fails, assume it's not trusted
+        return false;
+    }
+}
+
 /* ---------------- App Logic ---------------- */
 
 const app = document.getElementById("app");
@@ -294,23 +335,33 @@ if (accessKey) {
             decoded = atob(accessKey);
         }
 
+        // Ensure the URL starts with "http"
         if (!decoded.startsWith("http")) {
             decoded = "https://" + decoded;
         }
-        app.innerHTML = `
-        <div class="loading">
-            This will redirect you to another website : ${decoded}<br>
-            It could be dangerous. Please close this page if it looks unsafe. 
-        </div>
-        `;
-        setTimeout(() => {
-            window.location.href = decoded;
-        }, 3000);
 
+        // Check if the decoded URL belongs to a trusted domain
+        if (isTrustedDomain(decoded)) {
+            app.innerHTML = `
+                <div class="loading">
+                    This will redirect you to a trusted website: ${decoded}<br>
+                    It could be dangerous. Please close this page if it looks unsafe. 
+                </div>
+            `;
+            setTimeout(() => {
+                window.location.href = decoded;
+            }, 3000);
+        } else {
+            app.innerHTML = `
+                <div>
+                    <p>This is the decoded URL: <strong>${decoded}</strong></p>
+                    <p><button onclick="window.location.href='${decoded}'">Click here to visit</button></p>
+                </div>
+            `;
+        }
     } catch {
         app.innerHTML = "<h2>Invalid access key.</h2>";
     }
-
 }
 
 /* ---------------- Generator Mode ---------------- */
