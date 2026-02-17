@@ -275,16 +275,7 @@ function decodeUrlSafe(str) {
 }
 
 // Trusted domains list — keep this small!
-const trustedDomains = ['youtube.com', 'vimeo.com', 'amazon.com', 'youtu.be'];
-
-// Function to get the root domain and TLD (ignores subdomains)
-function getRootDomainAndTLD(hostname) {
-    const parts = hostname.split('.').reverse();
-    if (parts.length >= 2) {
-        return parts[1] + '.' + parts[0];  // Extract domain + TLD (e.g., youtube.com)
-    }
-    return hostname;  // For non-standard domain structures
-}
+const trustedDomains = ['youtube.com', 'youtu.be', 'www.youtube.com', 'www.youtu.be', 'music.youtube.com'];
 
 // Function to check if the URL belongs to a trusted domain and isn't suspicious
 function isTrustedDomain(url) {
@@ -293,11 +284,10 @@ function isTrustedDomain(url) {
         const parsedUrl = new URL(url);
         const hostname = parsedUrl.hostname;
 
-        // Get the root domain and TLD (ignores subdomains)
-        const rootDomain = getRootDomainAndTLD(hostname);
+        if (hostname == 'scary-link.github.io') {return true}
 
         // Check if the root domain and TLD is in the trusted list
-        if (trustedDomains.includes(rootDomain)) {
+        if (trustedDomains.includes(hostname)) {
 
             // Now check if the query parameters contain any suspicious redirects
             const searchParams = parsedUrl.searchParams;
