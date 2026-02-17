@@ -389,13 +389,25 @@ if (accessKey) {
 /* ---------------- Generator Mode ---------------- */
 
 else {
-
+    window.copyLink = function() {
+    const linkText = document.getElementById('scaryLinkText').innerText;
+    navigator.clipboard.writeText(linkText)
+        .then(() => {
+            alert('Link copied to clipboard!');
+        })
+        .catch(() => {
+            alert('Failed to copy. Try selecting and copying manually.');
+        });
+    };
+    
+    
     app.innerHTML = `
         <h2>ScaryLink</h2>
         <p>Make your URL look extremely suspicious.</p>
         <input id="urlInput" placeholder="Paste boring URL here..." />
         <button onclick="generateLink()">Generate Scary Link</button>
         <div class="output" id="output"></div>
+        <button id="copyBtn" onclick="copyLink()">Copy Link</button>
     `;
 
     window.generateLink = function() {
