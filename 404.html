@@ -354,27 +354,37 @@ if (accessKey) {
 
         // Check if the decoded URL belongs to a trusted domain
         if (isTrustedDomain(decoded)) {
+            // If the link is trusted, redirect immediately
             app.innerHTML = `
                 <div class="loading">
-                    This will redirect you to a trusted website: ${decoded}<br>
-                    It could be dangerous. Please close this page if it looks unsafe. 
+                    You’re being redirected to a trusted site... Please wait...
                 </div>
             `;
             setTimeout(() => {
-                window.location.href = decoded;
-            }, 3000);
+                window.location.href = decoded; // Redirect to the decoded URL
+            }, 250); // Redirect after a short delay
         } else {
+            // For non-trusted sites, display the clickable link after 3 seconds
             app.innerHTML = `
-                <div>
-                    <p>This is the decoded URL: <strong>${decoded}</strong></p>
-                    <p><button onclick="window.location.href='${decoded}'">Click here to visit</button></p>
+                <div class="loading">
+                    This is the decoded URL: <strong>${decoded}</strong><br>
+                    The link may not be trusted. Please wait for 3 seconds before clicking.
+                </div>
+                <div id="linkContainer">
+                    <p><a id="redirectLink" target="_blank" style="color: lime;">Click here to visit</a></p>
                 </div>
             `;
+
+            // Show the clickable link after 3 seconds
+            setTimeout(() => {
+                document.getElementById('redirectLink').href = decoded;
+            }, 3000);
         }
     } catch {
         app.innerHTML = "<h2>Invalid access key.</h2>";
     }
 }
+
 
 /* ---------------- Generator Mode ---------------- */
 
