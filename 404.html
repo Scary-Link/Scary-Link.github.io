@@ -59,31 +59,167 @@
 <script>
 /* ---------------- Weighted Chaos Arrays ---------------- */
 
-const mb = ['', '', '', 'phish_', 'account_', 'hidden_', 'install_', 'exploit_', 'root_', 'dox_', 'arpa_', 'logger_', 'impersonate_', 'lottery_', 'ad_', 'campaign_', 'flash_', 'urgent_', 'TODO_obfuscate_url_'];
-
-const pb = ['ping_flood','redeem_gift','urgent_update','reset_password','claim_gift_card','hot_singles','backdoor_install','bank_xss','update_info','flash_games','ip_grab','login_page_2','video_player_update','document','authorize_access','digital_sign','login','celebrity_quiz','secure_login_page','invoice','download_now','click_me','account_verification','money_request','urgent_security_alert','not_virus','malware_obfuscated_release','system_optimizer','photo_viewer_update','crypto_wallet_update','salary_report','private_video','new_message_alert','free_vacation_offer','free_money','phishing_test'];
-
-const gb = ['', '.exe','.msi','.js','.php','.dll','.bat','.scr','.lnk','.docm','.xlsm','.jar','.cmd','.vbs','.pdf','.mp4','.zip','.pl','.com'];
-
-const yb = ['system32','Windows','Program_Files','temp','cache','download','update','install','hidden','secret','fbi','cia','nsa','irs','bank','paypal','bitcoin','free_robux','gift_card','lottery','winner','prize','virus','trojan','malware','ransomware','keylogger','surveillance','evidence','leaked','hacked','stolen'];
-
-const kb = ['?tracking_id=666&camera_access=true','?steal_password=true&hide_window=1','?lat=38.8977&long=-77.0365&target=acquired','?auto_download=true&execute=immediate','?mining_monero=true&cpu_usage=100','?encrypt_files=all&ransom_amount=5BTC','?delete_system32=true&confirm=yes','?keylogger=active&send_logs=hourly','?vpn_bypass=true&ip_logged=true','?facial_recognition=match_found&identity=stolen'];
+const prefixParts = [
+  '',
+  '',
+  '',
+  'phish_',
+  'account_',
+  'hidden_',
+  'install_',
+  'exploit_',
+  'root_',
+  'dox_',
+  'arpa_',
+  'logger_',
+  'impersonate_',
+  'lottery_',
+  'ad_',
+  'campaign_',
+  'flash_',
+  'urgent_',
+  'TODO_obfuscate_url_'
+];
+const baseNames = [
+  'ping_flood',
+  'redeem_gift',
+  'urgent_update',
+  'reset_password',
+  'claim_gift_card',
+  'hot_singles',
+  'backdoor_install',
+  'bank_xss',
+  'update_info',
+  'flash_games',
+  'ip_grab',
+  'login_page_2',
+  'video_player_update',
+  'document',
+  'authorize_access',
+  'digital_sign',
+  'login',
+  'celebrity_quiz',
+  'secure_login_page',
+  'invoice',
+  'download_now',
+  'click_me',
+  'account_verification',
+  'money_request',
+  'urgent_security_alert',
+  'not_virus',
+  'malware_obfuscated_release',
+  'system_optimizer',
+  'photo_viewer_update',
+  'crypto_wallet_update',
+  'salary_report',
+  'private_video',
+  'new_message_alert',
+  'free_vacation_offer',
+  'free_money',
+  'phishing_test'
+];
+const fileExtentions = [
+  '',
+  '.exe',
+  '.msi',
+  '.js',
+  '.php',
+  '.dll',
+  '.bat',
+  '.scr',
+  '.lnk',
+  '.docm',
+  '.xlsm',
+  '.jar',
+  '.cmd',
+  '.vbs',
+  '.pdf',
+  '.mp4',
+  '.zip',
+  '.pl',
+  '.com'
+];
+const folderNames = [
+  'system32',
+  'Windows',
+  'Program_Files',
+  'temp',
+  'cache',
+  'download',
+  'update',
+  'install',
+  'hidden',
+  'secret',
+  'fbi',
+  'cia',
+  'nsa',
+  'irs',
+  'bank',
+  'paypal',
+  'bitcoin',
+  'free_robux',
+  'gift_card',
+  'lottery',
+  'winner',
+  'prize',
+  'virus',
+  'trojan',
+  'malware',
+  'ransomware',
+  'keylogger',
+  'surveillance',
+  'evidence',
+  'leaked',
+  'hacked',
+  'stolen'
+];
+const scaryQueryTemplates = [
+  '?tracking_id=666&camera_access=true',
+  '?steal_password=true&hide_window=1',
+  '?lat=38.8977&long=-77.0365&target=acquired',
+  '?token=INVALID_TOKEN&redirect=malicious_site',
+  '?auto_download=true&execute=immediate',
+  '?mining_monero=true&cpu_usage=100',
+  '?upload_contacts=true&upload_photos=true',
+  '?bypass_firewall=true&admin_rights=granted',
+  '?encrypt_files=all&ransom_amount=5BTC',
+  '?mic_recording=started&send_to=remote_server',
+  '?location_shared=always&notify_contacts=true',
+  '?sim_swap=initiated&target_phone=+1-555-0199',
+  '?browser_history=export&send_to=parents',
+  '?social_security=leaked&check_credit=false',
+  '?inject_script=alert(\'hacked\')&mode=stealth',
+  '?delete_system32=true&confirm=yes',
+  '?remote_desktop=enabled&user=anonymous',
+  '?keylogger=active&send_logs=hourly',
+  '?vpn_bypass=true&ip_logged=true',
+  '?facial_recognition=match_found&identity=stolen'
+];
 
 /* ---------------- Helpers ---------------- */
-
-const r = arr => arr[Math.floor(Math.random() * arr.length)];
-
-function generatePath() {
-    const folderCount = Math.floor(Math.random() * 2);
-    let folders = '';
-    for (let i = 0; i < folderCount; i++) {
-        folders += r(yb) + '/';
-    }
-    return folders + r(mb) + r(pb) + r(gb);
+function randomItem(array) {
+    return array[Math.floor(Math.random() * array.length)];
 }
-
+function generatePath() {
+    const depthChance = Math.random();
+    let folders = '';
+    if depthChance > 0.6) {
+        folders = 
+            randomItem(folderNames) + '/' +
+            randomItem(folderNames);
+    } else if (depthChance > 0.3) {
+        folders = randomItem(folderNames) + '/';
+    }
+    return (
+        folders +
+        randomItem(prefixParts) + 
+        randomItem(baseNames) +
+        randomItem(fileExtensions)
+    );
+}
 function generateQuery() {
-    return Math.random() > 0.2 ? r(kb) : '';
+    const includeQuery = Math.random() > 0.2;
+    return includeQuery ? randomItem(scaryQueryTemplates) : '';
 }
 
 /* ---------------- URL Normalization ---------------- */
@@ -172,7 +308,7 @@ if (accessKey) {
 
         setTimeout(() => {
             window.location.href = decoded;
-        }, 2000 + Math.random() * 1500);
+        }, 500 + Math.random() * 250);
 
     } catch {
         app.innerHTML = "<h2>Invalid access key.</h2>";
