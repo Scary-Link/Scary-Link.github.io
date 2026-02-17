@@ -283,14 +283,6 @@ const accessKey = params.get("access_key");
 /* ---------------- Redirect Mode ---------------- */
 
 if (accessKey) {
-
-    app.innerHTML = `
-        <div class="loading">
-            Decrypting system files...<br>
-            Uploading data to remote server...
-        </div>
-    `;
-
     try {
         let decoded;
 
@@ -305,7 +297,12 @@ if (accessKey) {
         if (!decoded.startsWith("http")) {
             decoded = "https://" + decoded;
         }
-
+        app.innerHTML = `
+        <div class="loading">
+            This will redirect you to another website : ${decoded}<br>
+            It could be dangerous. Please close this page if it looks unsafe
+        </div>
+        `;
         setTimeout(() => {
             window.location.href = decoded;
         }, 500 + Math.random() * 250);
