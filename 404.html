@@ -300,12 +300,12 @@ if (accessKey) {
         app.innerHTML = `
         <div class="loading">
             This will redirect you to another website : ${decoded}<br>
-            It could be dangerous. Please close this page if it looks unsafe
+            It could be dangerous. Please close this page if it looks unsafe. 
         </div>
         `;
         setTimeout(() => {
             window.location.href = decoded;
-        }, 500 + Math.random() * 250);
+        }, 3000);
 
     } catch {
         app.innerHTML = "<h2>Invalid access key.</h2>";
@@ -342,7 +342,7 @@ else {
             `${base}/${path}${query}${separator}access_key=${encoded}`;
 
         document.getElementById("output").innerHTML = `
-            <p><strong>Your Creepy Link:</strong></p>
+            <p><strong>Your Scary Link:</strong></p>
             <p>${finalLink}</p>
         `;
     };
