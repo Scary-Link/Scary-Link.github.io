@@ -317,6 +317,15 @@ function isTrustedDomain(url) {
     }
 }
 
+function escapeHtml(str) {
+    return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
 /* ---------------- App Logic ---------------- */
 
 const app = document.getElementById("app");
@@ -357,7 +366,7 @@ if (accessKey) {
             // For non-trusted sites, display the clickable link after 3 seconds
             app.innerHTML = `
                 <div class="loading">
-                    This is the decoded URL: <strong>${decoded}</strong><br>
+                    This is the decoded URL: <strong>${escapeHtml(decoded)}</strong><br>
                     The link may not be trusted. Please wait for 3 seconds before clicking.
                 </div>
                 <div id="linkContainer">
