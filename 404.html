@@ -389,7 +389,7 @@ if (accessKey) {
 
 else {
     function copyLink() {
-    const linkText = document.getElementById('output').innerText;
+    const linkText = document.getElementById('generatedLink').innerText;
     navigator.clipboard.writeText(linkText);
     };
     
@@ -421,7 +421,7 @@ else {
 
         document.getElementById("output").innerHTML = `
             <p><strong>Your Scary Link:</strong></p>
-            <p>${finalLink}</p>
+            <p id=generatedLink>${finalLink}</p>
         `;
     };
 }
